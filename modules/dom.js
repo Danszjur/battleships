@@ -1,43 +1,52 @@
-import Gameboard from "./gameboard.js";
-import Player from "./player.js";
-const player = new Player(name);
-const gameboard = player.gameboard;
+const Dom = (() => {
+  const Board = (() => {
+    function makeBoard(player) {
+      const shipKeys = player.gameboard.getKeys();
+      const attackedFields = player.gameboard.getAttackedFields();
+      const fieldSize = player.gameboard.fieldSize;
 
-const DomElements = (() => {
-  function makeBoard() {
-    const fieldSize = gameboard.fieldSize;
-    const boardContainer = document.createElement("div");
-    boardContainer.className = "boardContainer";
+      const container = document.createElement("div");
+      container.className = "boardContainer";
+      container.id = player.name;
+      for (let i = 0; i < fieldSize; i++) {
+        const line = document.createElement("div");
+        line.className = "line";
+        for (let j = 0; j < fieldSize; j++) {
+          const cell = document.createElement("div");
+          cell.className = "cell";
+          cell.dataset.x = i;
+          cell.dataset.y = j;
 
-    let counter = 0;
-    for (let i = 0; i < fieldSize; i++) {
-      const line = document.createElement("div");
-      line.className = "line";
-      for (let j = 0; j < fieldSize; j++) {
-        const cell = document.createElement("div");
-        cell.className = "cell";
-        cell.id = `cell-${counter}`;
+          const key = i * fieldSize + j;
+          if (shipKeys.has(key)) {
+            cell.style.backgroundColor = "lightblue";
+          }
+          if (attackedFields.has(key)) {
+            const bgColor = cell.style.backgroundColor;
+            if (bgColor === "lightblue") {
+              cell.style.backgroundColor = "red";
+            } else {
+              cell.style.backgroundColor = "coral";
+            }
+          }
+          //cell.textContent = `${i},${j}`; //show the cell data
 
-        line.appendChild(cell);
-        counter++;
+          line.appendChild(cell);
+        }
+        container.appendChild(line);
       }
-      boardContainer.appendChild(line);
-    }
-    return boardContainer;
-  }
 
-  function putOnTheShips(gameboard) {
-    const keys = gameboard.keys;
-    const fieldSize = gameboard.fieldSize * gameboard.fieldSize;
-    for (let i = 0; i < fieldSize; i++) {
-      if (keys.has(i)) {
-        const cell = document.getElementById(`cell-${i}`);
-        cell.style.backgroundColor = gameboard.color;
-      }
+      return container;
     }
-  }
 
-  return { makeBoard, putOnTheShips };
+    function delBoard(player) {
+      const board = document.getElementById(player.name);
+      board.remove();
+    }
+
+    return { makeBoard, delBoard };
+  })();
+  return { Board };
 })();
 
-export default DomElements;
+export default Dom;

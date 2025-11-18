@@ -11,6 +11,7 @@ class Gameboard {
   makeKey([x, y]) {
     return x * this.fieldSize + y;
   }
+
   placeShip(length, [x, y], isHorizontal) {
     if (!this.isShipFits(length, [x, y], isHorizontal)) {
       throw new Error("Ship cant fit");
@@ -76,6 +77,8 @@ class Gameboard {
           if (this.isAllShipsSunk()) {
             console.log("Game Over");
           }
+          console.log("hit!");
+
           return ship.isSunk();
         }
       }
@@ -94,6 +97,12 @@ class Gameboard {
       return true;
     }
     return false;
+  }
+  getAttackedFields() {
+    return this.attackedFields;
+  }
+  getKeys() {
+    return this.keys;
   }
 }
 export default Gameboard;
